@@ -190,6 +190,13 @@ class Relation(pd.DataFrame):
         return Relation(pd.merge(self,other,how='inner',on=list(col_list)))
 
 
+    def semijoin(self, other):
+
+        col_list = [x for x in self.columns if x in other.columns]
+        if not col_list:
+            raise ValueError("The two relations must have some columns in common")
+        return Relation(pd.merge(self,other,how='left',on=list(col_list)))
+
 
     def union(self,other):
         """ Take two Relations with the same columns and put them together top to bottom
@@ -571,5 +578,19 @@ class GroupWrap(pd.core.groupby.DataFrameGroupBy):
 
 if __name__ == '__main__':
     #country = Relation('country.csv')
-    import doctest
-    doctest.testmod()
+    #country.groupby(['continent']).count('name')
+    #print(type(country))
+    country = Relation('country.csv')
+    students = Relation('students.csv')
+    faculty = Relation('faculty.csv')
+    married = Relation('married.csv')
+    homes = Relation('homes.csv')
+
+
+    #print(faculty.project(['id','rank']).head(10))
+    #print(faculty.groupby(['id']).count('rank'))
+    print(students.semijoin(faculty))
+    print()
+    print(married.semijoin(homes))
+
+
